@@ -3,8 +3,9 @@
 
 usage () {
     cat <<HELP_USAGE
-    order (usage|host) [token] [get|create|calculate|estimateshipping|shipmethods|submit] [params]
+    order (usage|host) [token] [get|create|calculate|estimateshipping|shipmethods|submit|delete] [params]
     examples for oc-cli command list file:
+        order delete O_123
         order create order_123.json
         order calculate O_123
         order submit 0_123
@@ -33,5 +34,7 @@ fi
 if [ $3 == "shipmethods" ]; then
     curl -isf -w "%{http_code}:%{time_total}s\n" -o logs/$4.$3.log https://$1/v1/orders/outgoing/$4/$3 -X POST -H "Content-Type: application/json;" -H  "Authorization: Bearer "$2 -d @$5
 fi
-
+if [ $3 == "delete" ]; then
+    curl -w "%{http_code}:%{time_total}s\n" -s -o logs/$4.$3.json https://$1/v1/orders/Outgoing/$4 -X DELETE -H "Content-Type: application/json;" -H  "Authorization: Bearer "$2
+fi
  
