@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+
+# read -r line<.credentials;
+usage () {
+    cat <<HELP_USAGE
+    login host clientid user [pwd]
+HELP_USAGE
+}
+if [[ ($1) && $1 == "usage" ]]; then
+    usage
+    exit 255
+fi
+
+grant_type='password'
+if [[ (-z "$4") ]]; then
+    grant_type='client_credentials'
+fi
+
+scope='MeAdmin PasswordReset Shopper'
+
+curl -X POST -w "%{http_code}:%{time_total}s\n" -o logs/$0.log -sf https://$1/oauth/token \
+--data-urlencode 'client_id='$2 \
+--data-urlencode 'grant_type='$grant_type \
+--data-urlencode 'username='$3 \
+--data-urlencode 'password='$4 \
+--data-urlencode "scope=$scope"

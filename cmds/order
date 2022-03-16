@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+# OC Order Management
+
+usage () {
+    cat <<HELP_USAGE
+    order (usage|host) [token] [get|create|addline|calculate|estimateshipping|shipmethods|submit] [params]
+    examples for oc-cli command list file:
+        order create order_123.json
+        order addline line123.json
+        order addline lineABC.json
+        order calculate
+        order submit
+        order get 123
+HELP_USAGE
+}
+
+if [[ ($1) && $1 == "usage" ]]; then
+    usage
+    exit 255
+fi
+if [[ (-z "$2") ]]; then
+    sh cmds/errors/generic
+    exit $?
+fi
+
+if [ $3 == "get" ]; then
+    curl -w "%{http_code}:%{time_total}s\n" -s -o logs/order_$4.json https://$1/v1/orders/Outgoing/$4 -X GET -H "Content-Type: application/json;" -H  "Authorization: Bearer "$2
+fi
+if [ $3 == "create" ]; then
+    curl -isf -w "%{http_code}:%{time_total}s\n" -o logs/$4.log https://$1/v1/orders/Outgoing -X POST -H "Content-Type: application/json;" -H  "Authorization: Bearer "$2 -d @$4
+fi
+if [ $3 == "addline" ]; then
+    curl -isf -w "%{http_code}:%{time_total}s\n" -o logs/$5.log https://$1/v1/orders/outgoing/$4/lineitems -X POST -H "Content-Type: application/json;" -H  "Authorization: Bearer "$2 -d @$5
+fi
+if  [ $3 == "estimateshipping" ] || [ $3 == "calculate" ] || [ $3 == "submit" ]; then
+    curl -isf -w "%{http_code}:%{time_total}s\n" -o logs/$4.$3.log https://$1/v1/orders/outgoing/$4/$3 -X POST -H "Content-Type: application/json;" -H  "Authorization: Bearer "$2 -d {}
+fi
+if [ $3 == "shipmethods" ]; then
+    curl -isf -w "%{http_code}:%{time_total}s\n" -o logs/$4.$3.log https://$1/v1/orders/outgoing/$4/$3 -X POST -H "Content-Type: application/json;" -H  "Authorization: Bearer "$2 -d @$5
+fi
+
+ 

@@ -1,0 +1,10 @@
+-- START
+order create order.json
+order addline TEST1056 addline.json
+order addline TEST1056 addline2.json
+order calculate TEST1056
+order submit TEST1056
+order get TEST1056
+-- END
+
+
