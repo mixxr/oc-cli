@@ -1,104 +1,108 @@
-# AEM CLI
-Adobe Experience Manager Administration CLI 
+# Sitecore OrderCloud CLI
+OrderCloud CLI for buyers. It is intended to be used by buyers to create and submit orders.
 
 ## Tested with
-- AEM 6.4
+- Sitecore OrderCloud Sandbox
+- MacOS
+- it should work with Linux and Windows+cygwin (I never tested)
 
 ## Usage
-- populate the farm configuration file (it is a simple text file, see Farm Configuration File) with your farm addresses and credentials
-- execute the farm-exec shell script
+- create a file named `.credentials` by using the `.credentials_template` file. The format is simple: one line with OC endpoint, clientid and buyer credentials (without password it try to login as anonymous if API client is configured accordingly).
+- populate the `command-list.txt` file (it is a simple text file, you can name as you want and you can create as much files you need in order to reflect your use cases)
+    - the file contains the list of commands you want to execute on the OC tenant
+    - the script exits upon the first error
+- execute the shell script
 ```bash
-./farm-exec.sh farm-config-file command [parameter...]
+./oc-cli.sh command-list.txt
 ```
 - read the output
 
-To retrieve the list of implemented commands type `./farm-exec.sh file.txt`.
+To retrieve the list of implemented commands type `./oc-cli.sh usage`.
 
-To retrive the specific command usage type `./farm-exec.sh file.txt command usage`, an example in the following:
+To retrive the specific command usage type `./oc-cli.sh usage [order|line|login|...]`, an example in the following:
 
 ```bash
-> ./farm-exec.sh file.txt users usage
-=======
-AEM CLI
-=======
-Reading farm configuration from file.txt
--->
-<--
-users command usage:
-    users host:port user:pwd create userid password
-    users host:port user:pwd delete userid
-    users host:port user:pwd enable userid [true|false]
-    users host:port user:pwd changepwd userid password_to_change
-    users host:port user:pwd [add|rem] userid groupid
+> ./oc-cli.sh usage order
+============
+OrderCloud CLI
+============
+Reading command list from usage
+---- command list: ----
+line
+login
+order
+---- HELP: ----
+to execute:./oc-cli.sh command-list.txt
+for help: ./oc-cli.sh usage [command]
+------ COMMAND USAGE:
+    order (usage|host) [token] [get|create|calculate|estimateshipping|shipmethods|submit] [params]
+    examples for oc-cli command list file:
+        order create order_123.json
+        order calculate O_123
+        order submit 0_123
+        order get 0_123
 ```
 
 ## Command List (currently)
-- agents
-- backup
-- info
-- packages
-- ping
-- purge
-- users
-- workflow
+- login
+    - it requires the file `.credentials``
+- order
+- line
 
 ## Examples
 ```bash
-./farm-exec.sh file.txt purge audit
+./oc-cli.sh command-list.txt
 ```
-executes the maintenance audit task.
+where the command file contains:
 
-```bash
-./farm-exec.sh file.txt users changepwd replication-receiver my-new-secret
 ```
-changes the replication-receiver's password = my-new-secret.
-
-```bash
-./farm-exec.sh file.txt backup /backups/last 20
-```
-executes an on-line backup with target=/backups/last and delay=20.
-
-```bash
-./farm-exec.sh file.txt agents create-replicate author replic-000 http 10.10.1.15 4503 admin adminsecret;
-```
-creates on the author instance a Replication Agent named replic-001 that will replicate the server 10.10.1.15:4503.
-
-```bash
-./farm-exec.sh file.txt agents create-flush publish flush-001 https apache123.local 8080
-```
-creates on the publish instance a Flush Agent named flush-001 that will flush the web server apache123.local:8080 in HTTPS.
-
-```bash
-./farm-exec.sh file.txt users 
-```
-it will generate an error like the following:
-```
-users exits with error: MISSING ARGUMENTS. See usage.
-```
-
-## Farm Configuration File
-```
-NOTGOOD LINE 222
 -- START
-server1:4502 admin:admin
-server2:4522 admin:admin
-server3:4512 admin:pwd 
+login
+order create order.json
+line add TEST1056 addline.json
+line add TEST1056 addline2.json
+order calculate TEST1056
+order submit TEST1056
+order get TEST1056
 -- END
-NOTGOOD LINE
 ```
-The CLI executes only the lines between the `-- START` and `-- END`. During a command execution it could fail with one or more servers, so in place of writing a different file you can adjust the `-- START` and the `-- END` lines in order to complete the command.
 
-## Report
-The farm-exec executes and writes the output line by line as defined in the farm configuration file.
+## Command List File
 ```
-=======
-AEM CLI
-=======
-reading farm configuration from file.txt
--->
-server1:4502 admin:admin 200
-server2:4522 admin:admin 200
-server3:4512 admin:pwd 401
+NOT EXECUTED LINE ....
+-- START
+order create order.json
+line add TEST1056 addline.json
+line add TEST1056 addline2.json
+order calculate TEST1056
+order submit TEST1056
+order get TEST1056
+-- END
+NOT EXECUTED LINE
+```
+The CLI executes only the lines between the `-- START` and `-- END`. During the execution a command in the list could fail, in this case the cli stops. To recover the execution from the place it stopped, move the `-- START` and the `-- END` lines in order to include the commands you want to retry.
+
+## Login
+the login script reads from `.credentials` file and stores the token in a file named `.token`. 
+This file will be used by other command scripts.
+## Logs
+Each command execution generates a log file in the logs folder.
+## Report
+The oc-cli executes and writes the output line by line as defined in the command file.
+Each row reports http_status_code and elapsed in seconds.
+```
+============
+OrderCloud CLI
+============
+Reading command list from command-list.txt
+Working with host: your-endpoint.ordercloud.io
+--> executing...
+order create order.json:201:0.297448s
+line add TEST1057 addline.json:201:4.270156s
+line add TEST1057 addline2.json:201:0.986618s
+order calculate TEST1057:201:3.829835s
+order submit TEST1057:201:0.293340s
+order get TEST1057:200:0.177165s
 <--
 ```
 
@@ -107,48 +111,12 @@ server3:4512 admin:pwd 401
 You can add scripts in the cmds folder by using your own scripting language (bash, ruby, ...)
 
 - write your own script 
-  - has to accept at least 2 parameters, that is the host:port and usrid:pwd at least
+  - has to accept at least 1 parameter: `usage`
   - can accept more parameters to use in the script
   - finally, print a string to be used as Report
 - save your script in the folder cmds
 - add a usage example in the Examples section
-
-### Command Example
-```
-#!/usr/bin/env bash
-# usage: info.sh host:port user:pwd
-curl -i -k -u $2 http://$1/system/console/status-productinfo.json 2>/dev/null | grep Manager
-```
-
-produces an output like the following:
-```
-=======
-AEM CLI
-=======
-reading farm configuration from file.txt
--->
-localhost:4502 admin:admin " Adobe Experience Manager (6.4.0)",
-localhost:4522 admin:admin " Product : Adobe Experience Manager (6.0.0.SNAPSHOT)", " Adobe Experience Manager (6.2.0)",
-<--
-```
-
-### A Bit More Complex Command Example
-```
-#!/usr/bin/env bash
-usage () {
-    cat <<HELP_USAGE
-    backup host:port user:pwd target delay
-HELP_USAGE
-}
-
-if [[ (-z "$3") || (-z "$4") ]]; then
-    sh cmds/errors/generic $(usage)
-    exit $?
-fi
-curl -w "%{http_code}\n"  -o /dev/null -isf -k -u $2 http://$1/libs/granite/backup/content/createBackup/content/items/backupform.html -H 'Content-Type: application/x-www-form-urlencoded; charset=UTF-8' --data 'force=true&target='$3'&delay='$4 
-```
-It uses the generic error script that just prints a message and exit with 1.
-Here the usage() function is an heredoc in place of echo/printf, this will help the reader looking the code.
+- return http_status_code:elapsed
 
 # Limitations and Disclaimer
 THE SOFTWARE IS PROVIDED “AS IS.” YOU BEAR THE RISK OF USING IT. PLEASE USE IT IN NON PRODUCTION ENVIRONMENTS.

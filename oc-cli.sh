@@ -9,7 +9,8 @@ list(){
     done
 
     echo "---- HELP: ----"
-    echo "try: $0 usage [command]"
+    echo "to execute:"$0" command-list.txt"
+    echo "for help: $0 usage [command]"
 }
 
 get_token(){
@@ -27,21 +28,22 @@ get_token(){
     fi
 }
 
-printf "=======\nOrderCloud CLI\n=======\nReading command list from $1\n"
+printf "============\nOrderCloud CLI\n============\nReading command list from $1\n"
 
 # if usage command
-if [ $1 == "usage" ]; then
+if [[ ! -z "$1" ]] && [ $1 == "usage" ]; then
     list
-    CMD=cmds/"$2"
-    var=$(sh $CMD "usage")
-    echo $var
+    if [[ ! -z "$2" ]]; then
+        CMD=cmds/"$2"
+        var=$(sh $CMD "usage")
+        echo "------ COMMAND USAGE:"$'\n'"$var"
+    fi
     exit 0
 fi
 
 # if command file does not exist
 if [ ! -e "$1" ]; then
-    echo $1" file not found!"
-    list
+    printf $1" file not found!\ntype $0 usage\n"
     exit 1
 fi
 

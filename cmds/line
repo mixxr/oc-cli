@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+# OC Order Management
+
+usage () {
+    cat <<HELP_USAGE
+    line (usage|host) [token] [add] [params]
+    examples for oc-cli command list file:
+        line add O_123 line123.json
+        line add O_123 lineABC.json
+HELP_USAGE
+}
+
+if [[ ($1) && $1 == "usage" ]]; then
+    usage
+    exit 255
+fi
+if [[ (-z "$2") ]]; then
+    sh cmds/errors/generic
+    exit $?
+fi
+
+
+if [ $3 == "add" ]; then
+    curl -isf -w "%{http_code}:%{time_total}s\n" -o logs/$5.log https://$1/v1/orders/outgoing/$4/lineitems -X POST -H "Content-Type: application/json;" -H  "Authorization: Bearer "$2 -d @$5
+fi
+
+
+ 

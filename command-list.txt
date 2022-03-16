@@ -1,10 +1,10 @@
 -- START
 order create order.json
-order addline TEST1056 addline.json
-order addline TEST1056 addline2.json
-order calculate TEST1056
-order submit TEST1056
-order get TEST1056
+line add TEST1057 addline.json
+line add TEST1057 addline2.json
+order calculate TEST1057
+order submit TEST1057
+order get TEST1057
 -- END
 
 
