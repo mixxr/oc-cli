@@ -6,16 +6,16 @@ OrderCloud CLI for buyers. It is intended to be used by buyers to create and sub
 - MacOS
 - it should work with Linux and Windows+cygwin (I never tested)
 
-## Usage
+## Start
 - create a file named `.credentials` by using the `.credentials_template` file. The format is simple: one line with OC endpoint, clientid and buyer credentials (without password it tries to login as anonymous if API client is configured accordingly).
-- populate the `command-list.txt` file (it is a simple text file, you can name as you want and you can create as many files you need in order to reflect your use cases)
+- populate the `command-list.txt` file (there is one in the `/examples` folder)
     - the file contains the list of commands you want to execute on the OC tenant
     - the script exits upon the first error
 - execute the shell script
-```bash
-./oc-cli.sh command-list.txt
-```
-- read the output
+    ```bash
+    ./oc-cli.sh examples/command-list.txt
+    ```
+- read the output and look in the `logs` folder. Each command has its own log file.
 
 To retrieve the list of implemented commands type `./oc-cli.sh usage`.
 
