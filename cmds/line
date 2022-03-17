@@ -19,9 +19,10 @@ if [[ (-z "$2") ]]; then
     exit $?
 fi
 
+filename=${5##*/}
 
 if [ $3 == "add" ]; then
-    curl -isf -w "%{http_code}:%{time_total}s\n" -o logs/$5.log https://$1/v1/orders/outgoing/$4/lineitems -X POST -H "Content-Type: application/json;" -H  "Authorization: Bearer "$2 -d @$5
+    curl -isf -w "%{http_code}:%{time_total}s\n" -o logs/$filename.log https://$1/v1/orders/outgoing/$4/lineitems -X POST -H "Content-Type: application/json;" -H  "Authorization: Bearer "$2 -d @$5
 fi
 
 

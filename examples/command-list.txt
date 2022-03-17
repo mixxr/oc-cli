@@ -1,0 +1,12 @@
+-- START
+login
+order create examples/orderwh.json
+line add WEBHOOK_TEST_2a examples/addline.json
+line add WEBHOOK_TEST_2a examples/addline2.json
+order calculate WEBHOOK_TEST_2a
+order submit WEBHOOK_TEST_2a
+order get WEBHOOK_TEST_2a
+order delete WEBHOOK_TEST_2a
+-- END
+
+

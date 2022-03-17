@@ -1,7 +1,0 @@
--- START
-login
-order create examples/orderwh.json
-line add WEBHOOK_TEST_1 examples/addline.json
--- END
-
-

@@ -70,7 +70,7 @@ do
     fi
 
     if [[ $START == 1 && ! -z "${command[0]}" ]]; then
-        CMD=cmds/"${command[0]}"
+        CMD=$PWD/cmds/"${command[0]}"
         # checks if CMD does not exists
         if [ ! -e "$CMD" ]; then
             echo $CMD" command not found!"
