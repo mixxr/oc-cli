@@ -1,18 +1,7 @@
 -- START
-order create order123.json
-line add TEST123 addline.json
-line add TEST123 addline2.json
-order calculate TEST123
-order submit TEST123
-order get TEST123
-order create order124.json
-line add TEST124 addline.json
-line add TEST124 addline2.json
-order calculate TEST124
-order submit TEST124
-order get TEST124
-order delete TEST123
-order delete TEST124
+login
+order create examples/orderwh.json
+line add WEBHOOK_TEST_1 examples/addline.json
 -- END
 
 

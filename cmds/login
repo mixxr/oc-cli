@@ -18,7 +18,7 @@ fi
 
 scope='MeAdmin PasswordReset Shopper'
 
-curl -X POST -w "%{http_code}:%{time_total}s\n" -o logs/$0.log -sf https://$1/oauth/token \
+curl -X POST -w "%{http_code}:%{time_total}s\n" -o logs/login.log -sf https://$1/oauth/token \
 --data-urlencode 'client_id='$2 \
 --data-urlencode 'grant_type='$grant_type \
 --data-urlencode 'username='$3 \
