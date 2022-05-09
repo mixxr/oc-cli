@@ -1,12 +1,24 @@
 -- START
 login
+me sas
 order create examples/orderwh.json
-line add WEBHOOK_TEST_2a examples/addline.json
-line add WEBHOOK_TEST_2a examples/addline2.json
-order calculate WEBHOOK_TEST_2a
-order submit WEBHOOK_TEST_2a
-order get WEBHOOK_TEST_2a
-order delete WEBHOOK_TEST_2a
+line add WEBHOOK_TEST_1115 examples/addline.json
+line add WEBHOOK_TEST_1115 examples/addline2.json
+order calculate WEBHOOK_TEST_1115
+order submit WEBHOOK_TEST_1115
+payment create WEBHOOK_TEST_1115 examples/payment_sa1.json
+payment create WEBHOOK_TEST_1115 examples/payment_sa2.json
+payment get WEBHOOK_TEST_1115
+payment get WEBHOOK_TEST_1115 P1115A
+payment get WEBHOOK_TEST_1115 P1115B
+order submit WEBHOOK_TEST_1115
+order get WEBHOOK_TEST_1115
+me sas
+me sas SAcc01
+me sas SAcc02
+order delete WEBHOOK_TEST_1115
 -- END
+
+
 
 

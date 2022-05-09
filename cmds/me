@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+# OC Order Management
+
+usage () {
+    cat <<HELP_USAGE
+    me (usage|host) [token] [sas] [params]
+    examples for oc-cli command list file:
+        me sas // returns entitled spending accounts
+        me sas SA01 // returns SA01 spending account
+HELP_USAGE
+}
+
+if [[ ($1) && $1 == "usage" ]]; then
+    usage
+    exit 255
+fi
+if [[ (-z "$2") ]]; then
+    sh cmds/errors/generic
+    exit $?
+fi
+filename="spendingAccounts"
+
+if [ $3 == "sas" ]; then
+    curl -w "%{http_code}:%{time_total}s\n" -s -o logs/$filename$4.get.json https://$1/v1/me/spendingAccounts/$4 -X GET -H "Content-Type: application/json;" -H  "Authorization: Bearer "$2
+fi
+ 

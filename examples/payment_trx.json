@@ -1,0 +1,8 @@
+{
+  "ID": "TRX1115A",
+  "Type": "SpendingAccount",
+  "DateExecuted": "2022-05-09",
+  "Amount": 1,
+  "ResultCode": "RC1",
+  "ResultMessage": "Approved"
+}
