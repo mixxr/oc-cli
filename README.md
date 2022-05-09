@@ -48,6 +48,9 @@ for help: ./oc-cli.sh usage [command]
     - it requires the file `.credentials``
 - order
 - line
+- me 
+    - spending accounts
+- payments
 
 ## Examples
 ```bash
