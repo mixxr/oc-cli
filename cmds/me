@@ -1,12 +1,17 @@
 #!/usr/bin/env bash
-# OC Order Management
+# OC Me Management
 
 usage () {
     cat <<HELP_USAGE
-    me (usage|host) [token] [sas] [params]
+    me (usage|host) [token] [sas|view|products|creditcards] [params]
     examples for oc-cli command list file:
         me sas // returns entitled spending accounts
         me sas SA01 // returns SA01 spending account
+        me products [logselector] // returns my products
+        me view [logselector] // returns my profile
+        me creditcards
+        me orders [status]
+        me register profile.json
 HELP_USAGE
 }
 
@@ -23,4 +28,23 @@ filename="spendingAccounts"
 if [ $3 == "sas" ]; then
     curl -w "%{http_code}:%{time_total}s\n" -s -o logs/$filename$4.get.json https://$1/v1/me/spendingAccounts/$4 -X GET -H "Content-Type: application/json;" -H  "Authorization: Bearer "$2
 fi
+
+if [ $3 == "view" ]; then
+    curl -w "%{http_code}:%{time_total}s\n" -s -o logs/me$4.get.json https://$1/v1/me -X GET -H "Content-Type: application/json;" -H  "Authorization: Bearer "$2
+fi
  
+if [ $3 == "products" ] || [ $3 == "creditcards" ]; then
+    curl -w "%{http_code}:%{time_total}s\n" -s -o logs/me$4.$3.get.json https://$1/v1/me/$3 -X GET -H "Content-Type: application/json;" -H  "Authorization: Bearer "$2
+fi
+if [ $3 == "orders" ]; then
+    status=""
+    if [ "$4" ]; then
+        status="?Status="$4
+    fi
+    curl -w "%{http_code}:%{time_total}s\n" -s -o logs/me.$3$4.get.json https://$1/v1/me/$3$status -X GET -H "Content-Type: application/json;" -H  "Authorization: Bearer "$2
+fi
+
+if [ $3 == "register" ]; then
+    curl -isf -w "%{http_code}:%{time_total}s\n" -o logs/me.$4.log https://$1/v1/me/register?anonUserToken=$2 -X PUT -H "Content-Type: application/json;" -H  "Authorization: Bearer "$2 -d @$4
+fi
+

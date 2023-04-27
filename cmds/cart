@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+# OC Cart Management
+
+usage () {
+    cat <<HELP_USAGE
+    cart (usage|host) [token] [get|create|calculate|payments|delete|submit] [params]
+    examples for oc-cli command list file:
+        cart delete 
+        cart create cart.json
+        cart calculate
+        cart payments payment.json
+        cart validate
+        cart submit
+        cart get [log-selector]
+HELP_USAGE
+}
+
+if [[ ($1) && $1 == "usage" ]]; then
+    usage
+    exit 255
+fi
+if [[ (-z "$2") ]]; then
+    sh cmds/errors/generic
+    exit $?
+fi
+
+if [ $3 == "get" ]; then
+    curl -w "%{http_code}:%{time_total}s\n" -s -o logs/cart.$3$4.json https://$1/v1/cart -X GET -H "Content-Type: application/json;" -H  "Authorization: Bearer "$2
+fi
+if [ $3 == "create" ]; then
+    curl -isf -w "%{http_code}:%{time_total}s\n" -o logs/cart.$3.log https://$1/v1/cart -X PUT -H "Content-Type: application/json;" -H  "Authorization: Bearer "$2 -d @$4
+fi
+if [ $3 == "payments" ]; then
+    filename=${4##*/}
+    curl -isf -w "%{http_code}:%{time_total}s\n" -o logs/cart.$3.$filename.log https://$1/v1/cart/$3 -X POST -H "Content-Type: application/json;" -H  "Authorization: Bearer "$2 -d @$4
+fi
+if  [ $3 == "validate" ] || [ $3 == "calculate" ] || [ $3 == "submit" ]; then
+    curl -isf -w "%{http_code}:%{time_total}s\n" -o logs/cart.$3.log https://$1/v1/cart/$3 -X POST -H "Content-Type: application/json;" -H  "Authorization: Bearer "$2 -d {}
+fi
+if [ $3 == "delete" ]; then
+    curl -w "%{http_code}:%{time_total}s\n" -si -o logs/cart.$3.json https://$1/v1/cart -X DELETE -H "Content-Type: application/json;" -H  "Authorization: Bearer "$2
+fi
+ 

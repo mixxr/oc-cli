@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+# OC Cart Management
+
+usage () {
+    cat <<HELP_USAGE
+    cartline (usage|host) [token] [get|add|delete] [params]
+    examples for oc-cli command list file:
+        cartline add line.json
+        cartline get LINE_ID
+        cartline getall [log-selector]
+        cartline delete LINE_ID
+HELP_USAGE
+}
+
+if [[ ($1) && $1 == "usage" ]]; then
+    usage
+    exit 255
+fi
+if [[ (-z "$2") ]]; then
+    sh cmds/errors/generic
+    exit $?
+fi
+
+if [ $3 == "getall" ]; then
+    curl -w "%{http_code}:%{time_total}s\n" -s -o logs/cartline.$3$4.json https://$1/v1/cart/lineitems -X GET -H "Content-Type: application/json;" -H  "Authorization: Bearer "$2
+fi
+if [ $3 == "get" ]; then
+    curl -w "%{http_code}:%{time_total}s\n" -s -o logs/cartline.$4.$3.json https://$1/v1/cart/lineitems/$4 -X GET -H "Content-Type: application/json;" -H  "Authorization: Bearer "$2
+fi
+if [ $3 == "add" ]; then
+    filename=${4##*/}
+    curl -isf -w "%{http_code}:%{time_total}s\n" -o logs/cart.$3.$filename.log https://$1/v1/cart/lineitems -X POST -H "Content-Type: application/json;" -H  "Authorization: Bearer "$2 -d @$4
+fi
+if [ $3 == "delete" ]; then
+    curl -w "%{http_code}:%{time_total}s\n" -si -o logs/cartline.$4.$3.json https://$1/v1/cart/lineitems/$4 -X DELETE -H "Content-Type: application/json;" -H  "Authorization: Bearer "$2
+fi
+ 

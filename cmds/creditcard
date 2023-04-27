@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+# OC Order Management
+
+usage () {
+    cat <<HELP_USAGE
+    creditcard (usage|host) [token] [get|create] [params]
+    examples for oc-cli command list file:
+        creditcard create BUYER_ID card.json
+        creditcard get BUYER_ID
+HELP_USAGE
+}
+
+if [[ ($1) && $1 == "usage" ]]; then
+    usage
+    exit 255
+fi
+if [[ (-z "$2") ]]; then
+    sh cmds/errors/generic
+    exit $?
+fi
+
+
+if [ $3 == "get" ]; then
+    curl -w "%{http_code}:%{time_total}s\n" -s -o logs/$4.creditcards.get.json https://$1/v1/buyers/$4/creditcards -X GET -H "Content-Type: application/json;" -H  "Authorization: Bearer "$2
+fi
+if [ $3 == "create" ]; then
+    filename=${5##*/}
+    curl -isf -w "%{http_code}:%{time_total}s\n" -o logs/$filename.log https://$1/v1/buyers/$4/creditcards -X POST -H "Content-Type: application/json;" -H  "Authorization: Bearer "$2 -d @$5
+fi
+ 

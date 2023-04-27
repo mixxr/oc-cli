@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+# OC Buyer endpoint
+
+usage () {
+    cat <<HELP_USAGE
+    buyer (usage|host) [token] [impersonate] [params]
+    examples for oc-cli command list file:
+        buyer impersonate ORG UID grant.json
+HELP_USAGE
+}
+
+if [[ ($1) && $1 == "usage" ]]; then
+    usage
+    exit 255
+fi
+if [[ (-z "$2") ]]; then
+    sh cmds/errors/generic
+    exit $?
+fi
+
+if [ $3 == "impersonate" ]; then
+    curl -w "%{http_code}:%{time_total}s\n" -sf -o logs/buyer.$3.log https://$1/v1/buyers/$4/users/$5/accesstoken -X POST -H "Content-Type: application/json;" -H  "Authorization: Bearer "$2 -d @$6
+fi
+

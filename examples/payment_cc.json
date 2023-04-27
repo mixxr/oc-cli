@@ -1,0 +1,5 @@
+{
+  "Type": "CreditCard",
+  "ID": "PAY01_CC",
+  "Description": "payment with credit card"
+}

@@ -77,7 +77,7 @@ do
             exit 3
         fi
         if [ ${command[0]} == "login" ]; then
-            result=$(sh $CMD ${line[@]})
+            result=$(sh $CMD ${line[@]} ${command[@]:1})
             read -d : -a var <<< "$result";
             if [[ ${var[0]} -eq 200 ]]; then
                 cut -d \" -f 4 logs/login.log > .token
@@ -85,6 +85,13 @@ do
         else
             get_token
             result=$(sh $CMD $host $token ${command[@]:1})
+            if [[ ${command[0]} == "buyer" && ${command[1]} == "impersonate" ]]; then
+                read -d : -a var <<< "$result";
+                if [[ ${var[0]} -eq 200 ]]; then
+                    cp .token .token.back
+                    cut -d \" -f 4 logs/buyer.impersonate.log > .token
+                fi
+            fi
         fi
         
         echo ${command[@]}:"$result"

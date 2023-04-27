@@ -1,0 +1,8 @@
+{
+    "ID": "CC02",
+    "Token": "1234567890",
+    "CardType": "mastercard",
+    "CardholderName": "Mike",
+    "PartialAccountNumber": "12346",
+    "ExpirationDate": "2024-10-01"
+  }
