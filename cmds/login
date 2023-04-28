@@ -18,10 +18,8 @@ fi
 
 scope="MeAdmin PasswordReset Shopper"
 if [[ ($5) ]]; then
-    echo "ok"
     scope="${5//,/ }"
 fi
-echo "scope=$scope"
 
 curl -X POST -w "%{http_code}:%{time_total}s\n" -o logs/login.log -sf https://$1/oauth/token \
 --data-urlencode 'client_id='$2 \
